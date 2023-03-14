@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('assujettissements', function (Blueprint $table) {
+        Schema::create('dgi_assujettissements', function (Blueprint $table) {
             $table->id();
             $table->text('fk_contribuable')->nullable();
             $table->text('date_debut')->nullable();
@@ -33,6 +33,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('assujettissements');
+        Schema::dropIfExists('dgi_assujettissements');
     }
 };

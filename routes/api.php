@@ -36,6 +36,10 @@ Route::put('assujettissement/{id}',[App\Http\Controllers\Assujettissement\MainCo
 
 Route::post('cloture/{id}',[App\Http\Controllers\Assujettissement\MainController::class,'Terminate']);
 
+Route::get('ping',function(){
+        echo date("Y-m-d h:i:s");
+    });
+
 //Route::get('assujettis',[App\Http\Controllers\RAPPORT\MainController::class,'Assujettis_List']);
 
 //Route::get('impot',[App\Http\Controllers\Assujettissement\MainController::class,'Impot_List']);
