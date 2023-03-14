@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Assujettissement;
 
 
-use App\Models\Assujettissements;
+use App\Models\dgi_assujettissements;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -124,7 +124,7 @@ class MainController extends Controller
         $fk_impots              = $request['fk_impot'];
         $fk_actes_generateurs   = $request['fk_acte_generateur'];
         
-        $obj = new assujettissements;
+        $obj = new dgi_assujettissements;
         
         $obj->fk_contribuable   = $fk_contribuable;
         $obj->date_debut        = $date_debut;
@@ -160,7 +160,7 @@ class MainController extends Controller
         
 
         $response = array();
-        $post   = new assujettissements;
+        $post   = new dgi_assujettissements;
         $values = $post;
 
         if(isset($impot)){
@@ -230,7 +230,7 @@ class MainController extends Controller
 
     public function Update($id, request $request){
 
-        $obj = assujettissements ::find($id);
+        $obj = dgi_assujettissements ::find($id);
         if($obj){   
 
             $validator = Validator::make($request->all(), [
@@ -278,7 +278,7 @@ class MainController extends Controller
     }
     
     public function View($id){
-        $obj    = new assujettissements;      
+        $obj    = new dgi_assujettissements;      
         $values = $obj->find($id);
         $values = json_encode($values,JSON_UNESCAPED_UNICODE);
     
@@ -317,7 +317,7 @@ class MainController extends Controller
 
     public function Terminate($id, request $request){
 
-        $obj = assujettissements ::find($id);
+        $obj = dgi_assujettissements ::find($id);
         if($obj){   
 
             $validator = Validator::make($request->all(), [
