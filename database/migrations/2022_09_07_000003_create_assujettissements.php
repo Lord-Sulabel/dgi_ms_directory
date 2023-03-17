@@ -15,14 +15,22 @@ return new class extends Migration
     {
         Schema::create('dgi_assujettissements', function (Blueprint $table) {
             $table->id();
-            $table->text('fk_contribuable')->nullable();
-            $table->text('date_debut')->nullable();
-            $table->text('date_fin')->nullable();
+            $table->text('fk_repertoire')->nullable();
+            $table->text('dateDebut')->nullable();
+            $table->text('dateFin')->nullable();
+            $table->integer('etat')->nullable();
+            
+            $table->date('dateCreate')->nullable();
+            $table->text('agentCreate')->nullable();
+            $table->date('dateUpdate')->nullable();
+            $table->text('agentUpdate')->nullable();
+            $table->date('dateDelete')->nullable();
+            $table->text('agentDelete')->nullable();
+
+            $table->text('fk_natureImpots')->nullable();
             $table->text('fk_impots')->nullable();
-            $table->text('fk_actes_generateurs')->nullable();
-            $table->text('create_date')->nullable();
-            $table->text('create_agent')->nullable();
-            $table->timestamps();
+
+
         });
     }
 

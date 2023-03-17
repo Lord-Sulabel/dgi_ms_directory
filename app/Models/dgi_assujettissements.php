@@ -10,12 +10,21 @@ use DB;
 class dgi_assujettissements extends Model
 {
     use HasFactory;
+    public $timestamps = false;
 
     protected $fillable = [
-        'fk_contribuable',
-        'date_debut',
-        'fk_impot',
-        'fk_acte_generateur',
+        'fk_repertoire',
+        'dateDebut',
+        'dateFin',
+        'etat',
+        'dateCreate',
+        'agentCreate',
+        'dateUpdate',
+        'agentUpdate',
+        'dateDelete',
+        'agentDelete',
+        'fk_impots',
+        'fk_nature_impots',
     ];
 
     

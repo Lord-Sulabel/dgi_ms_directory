@@ -34,7 +34,7 @@ Installation
 
 
 Test *
-- A l'aide d'un outil de test d'API tel que Postman, Appelez la route "url_du_serveur/dgi_ms_assujettissements/api/ping" en GET sur ce web service, si il a démmarer, il vous retournera la date et heure du serveur au format "Y-m-d h:i:s" (ex. 2023-03-14 07:42:16)  .
+- A l'aide d'un outil de test d'API tel que Postman, Appelez la route "url_du_serveur/dgi_ms_assujettissements/public/api/ping" en GET sur ce web service, si il a démmaré, il vous retournera la date et heure du serveur au format "Y-m-d h:i:s" (ex. 2023-03-14 07:42:16)  .
 
 
 Devellopeurs

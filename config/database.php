@@ -79,15 +79,15 @@ return [
         ],
 
         'sqlsrv' => [
-            'driver'=> 'sqlsrv',
-            'url'   => env('DATABASE_URL'),
-            'host'  => env('DB_HOST', 'localhost'),
+            'driver'    => 'sqlsrv',
+            'url'       => env('DATABASE_URL'),
+            'host'      => '207.180.239.152',               // env('DB_HOST', 'localhost'),
             //'port' => env('DB_PORT', '1433'),
-            'database'  => 'dgi_ms__assujettissements',//env('DB_DATABASE', 'forge'),
-            'username'  => 'sa',//env('DB_USERNAME', 'forge'),
-            'password'  => 'hids+1234',//env('DB_PASSWORD', ''),
+            'database'  => 'ms_gestion_assujettissement',   // 'dgi_ms__assujettissements',  //env('DB_DATABASE', 'forge'),
+            'username'  => 'gesAssujetissement',            // 'sa',                         //env('DB_USERNAME', 'forge'),
+            'password'  => 'hids+1234',                     // env('DB_PASSWORD', ''),
             'charset'   => 'UTF-8',
-            'prefix'=> '',
+            'prefix'    => '',
             'prefix_indexes'=> true,
         ],
 

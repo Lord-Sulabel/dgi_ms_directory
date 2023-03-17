@@ -21,115 +21,26 @@ class MainController extends Controller
     use HasApiResponse;
 
 
-    public function Assujettissement__New(Request $request){
-        /*
-        $response = "";
-        $validator = Validator::make($request->all(), [
-            'date_exigibilite' => 'required',
-            'nif'   => 'required',
-            'fournisseur_nom'=> 'required',
-            'fournisseur_nif'  => 'required',
-            'facture_numero'   => 'required',
-            'facture_date'   => 'required',
-            'montant'   => 'required',
-        ]);
-        if($validator->fails()){
-            return $this->sendError('Validation Error.', $validator->errors());       
-        }
-        //..........................................................
-        $date_exigibilite   = $request['date_exigibilite'];
-        $nif                = $request['nif'];
-        $exist_edd = $this->EDD_TVA__Exist($nif, $date_exigibilite);
-
-        if(!$exist_edd){
-            $created = $this->EDD_TVA__Create($date_exigibilite,$nif);
-            if(!$created){
-                $response = [
-                    'status' => false,
-                    'message' =>  "Impossible créer la declaration",
-                    'data' => [
-                        "date_exigibilite"  =>$date_exigibilite,
-                        "nif"               =>$nif,
-                    ],
-                ];
-            }
-        }
-
-        if($exist_edd || $created){
-            //$EDD_TVA__Id = $this->EDD_TVA__GetId($nif, $date_exigibilite) ;
-            $obj = new edd_tva;
-            $id = $obj->GetId($nif, $date_exigibilite);
-            $resp   = json_decode($id);
-            $tsize  = sizeof($resp);
-            if($tsize > 0){
-                $obj = $resp[0];
-                $EDD_TVA__Id = $obj->id;
-            }
-
-            $data = [
-                "date_exigibilite"  =>$date_exigibilite,
-                "nif"               =>$nif,
-                "fournisseur_nom"   =>$request['fournisseur_nom'],
-                "fournisseur_nif"   =>$request['fournisseur_nif'],
-                "facture_numero"    =>$request['facture_numero'],
-                "facture_date"      =>$request['facture_date'],
-                "montant"           =>$request['montant'],
-            ];
-
-            $saved = $this->EDD_TVA_DEDUCTION__Create($EDD_TVA__Id,$data);
-                       
-            if($saved){
-
-                $response = [
-                    'status'  => true,
-                    'message' =>  "Données enregistrés avec succès",
-                    'data' => $data,
-                ];
-
-            }else{
-
-                 $response = [
-                    'status'  => false,
-                    'message' =>  "impossible d'enregistrer",
-                    'data' => $data,
-                ];
-            }
-
-            
-        }
-        
-        
-        
-        $tojson = json_encode($response,JSON_FORCE_OBJECT|JSON_UNESCAPED_UNICODE);
-        print_r($tojson);
-        */
-    }
-
-
     public function Create(Request $request){
         
         $response = "";
         $validator = Validator::make($request->all(), [
-            'fk_contribuable' => 'required|min:5',
-            'date_debut'   => 'required|date',
-            'fk_impot'=> 'required',
-            'fk_acte_generateur'  => 'required',
+            //'fk_repertoire' => 'required|min:5',
+            //'dateDebut'   => 'required|date',
+            //'fk_natureImpots'=> 'required',
+            //'impots'  => 'required',
         ]);
         if($validator->fails()){
             return $this->sendError('Validation Error.', $validator->errors());       
         }
         //..........................................................
-        $fk_contribuable        = $request['fk_contribuable'];
-        $date_debut             = $request['date_debut'];
-        $fk_impots              = $request['fk_impot'];
-        $fk_actes_generateurs   = $request['fk_acte_generateur'];
-        
         $obj = new dgi_assujettissements;
+
+        $obj->fk_repertoire     = $request['fk_repertoire'];
+        $obj->dateDebut         = $request['dateDebut'];
+        $obj->fk_natureImpots   = $request['fk_natureImpots'];
+        $obj->fk_impots         = $request['fk_impots'];
         
-        $obj->fk_contribuable   = $fk_contribuable;
-        $obj->date_debut        = $date_debut;
-        $obj->fk_impots          = $fk_impots;
-        $obj->fk_actes_generateurs = $fk_actes_generateurs;
         $saved = $obj->save();
                     
         if($saved){
@@ -145,8 +56,8 @@ class MainController extends Controller
         
         
         
-        $tojson = json_encode($response,JSON_FORCE_OBJECT|JSON_UNESCAPED_UNICODE);
-        print_r($tojson);
+        //$tojson = json_encode($response,JSON_FORCE_OBJECT|JSON_UNESCAPED_UNICODE);
+        //print_r($tojson);
         
     }
 
@@ -154,72 +65,74 @@ class MainController extends Controller
 
     public function List(Request $request){
 
-
-        $impot = $request['impot'];
-        $fk_actes_generateurs = $request['acte_generateur'];
+        $fk_natureImpots = $request['fk_natureImpots'];
+        $impots = $request['fk_impots'];
         
 
         $response = array();
         $post   = new dgi_assujettissements;
         $values = $post;
 
-        if(isset($impot)){
-            $values = $values->where("fk_impots","=",$impot);
+        if(isset($fk_natureImpots)){
+            $values = $values->where("fk_natureImpots","=",$fk_natureImpots);
         }
 
-        if(isset($fk_actes_generateurs)){
-            $values = $values->where("fk_actes_generateurs","=",$fk_actes_generateurs);
+        if(isset($impots)){
+            $values = $values->where("impots","=",$impots);
         }
 
         $values = $values->get();
 
-        
         $values = json_decode(json_encode($values));
 
-        //print_r($values);
-        //print_r($values);
         $all_nifs = array();
-        $all_actes = array();
+        $all_impots = array();
+
+        //print_r($values);
 
         if(is_array($values)){
             foreach($values as $val){
-                $nif = $val->fk_contribuable;
+                $nif = $val->fk_repertoire;
                 if(!in_array($nif,$all_nifs)){
                     $all_nifs[] = $nif;
                 }
 
-                $acte = $val->fk_actes_generateurs;
-                if(!in_array($acte,$all_actes)){
-                    $all_actes[] = $acte;
+                $impot = $val->fk_impots;
+                if(!in_array($impot,$all_impots)){
+                    $all_impots[] = $impot;
                 }
             }
 
             
-            
             $all_nifs = base64_encode(json_encode($all_nifs));
             $remote_server = new remote_server;
-            $all_contribuables = $remote_server->GetData("http://localhost/dgi_ms_gestion_contribuable/public/api/for_nifs_v2/".$all_nifs);
-            $all_contribuables = json_decode($all_contribuables);
+            $all_repertoires = $remote_server->GetData("http://localhost/dgi_ms_gestion_contribuable/public/api/for_nifs_v2/".$all_nifs);
+            $all_repertoires = json_decode($all_repertoires);
             unset($all_nifs);
 
-            //print_r($all_contribuables);
             
-            $all_actes = base64_encode(json_encode($all_actes));
+            
+            $all_impots = base64_encode(json_encode($all_impots));
             $remote_server = new remote_server;
-            $all_actes_generateurs = $remote_server->GetData("http://localhost/dgi_ms_gestion_impots/public/api/actes_for_ids_v2/".$all_actes); 
-            $all_actes_generateurs = json_decode($all_actes_generateurs);
-            unset($all_actes);
+            $all_impots_details = $remote_server->GetData("http://localhost/dgi_ms_gestion_impots/public/api/actes_for_ids_v2/".$all_impots); 
+            $all_impots_details = json_decode($all_impots_details);
+            unset($all_impots);
             unset($remote_server);
 
-            //print_r($all_actes_generateurs);
 
+            
             foreach($values as $val){
-                $nif = $val->fk_contribuable;
-                $acte = $val->fk_actes_generateurs;
-                $val->contribuable    = $all_contribuables->$nif;
-                $val->acte_generateur = $all_actes_generateurs->$acte;
-                unset($val->fk_contribuable);
-                unset($val->fk_actes_generateurs);
+                $nif = $val->fk_repertoire;
+                $impot = $val->fk_impots;
+
+                if(is_array($all_repertoires)){
+                    $val->fk_repertoire     = $all_repertoires->$nif;
+                }
+                if(is_array($all_impots_details)){
+                    $val->fk_impots         = $all_impots_details->$impot;
+                }
+                //unset($val->fk_repertoire);
+                //unset($val->impots);
             }
         }
         
@@ -234,27 +147,21 @@ class MainController extends Controller
         if($obj){   
 
             $validator = Validator::make($request->all(), [
-                'fk_contribuable' => 'required|min:5',
-                'date_debut'   => 'required|date',
-                'fk_impot'=> 'required',
-                'fk_acte_generateur'  => 'required',
+                //'fk_repertoire'     => 'required|min:5',
+                //'dateDebut'         => 'required|date',
+                //'fk_natureImpots'   => 'required',
+                //'impots'            => 'required',
             ]);
     
             if($validator->fails()){
                 return $this->sendError('Validation Error.', $validator->errors());       
             }
                 
-            $fk_contribuable        = $request['fk_contribuable'];
-            $date_debut             = $request['date_debut'];
-            $fk_impots              = $request['fk_impot'];
-            $fk_actes_generateurs   = $request['fk_acte_generateur'];
-            
-
-            
-            $obj->fk_contribuable       = $fk_contribuable;
-            $obj->date_debut            = $date_debut;
-            $obj->fk_impots             = $fk_impots;
-            $obj->fk_actes_generateurs  = $fk_actes_generateurs;
+            $obj->fk_repertoire     = $request['fk_repertoire'];
+            $obj->dateDebut         = $request['dateDebut'];
+            $obj->fk_natureImpots   = $request['fk_natureImpots'];
+            $obj->fk_impots         = $request['fk_impots'];
+    
         
             $saved = $obj->save();
                         
@@ -286,32 +193,6 @@ class MainController extends Controller
     }
 
 
-/*
-    public function Impot_List(Request $request){
-
-        $response = array();
-
-        //$date_exigibilite   = $request['date_exigibilite'];
-       // $nif   = $request['nif'];
-
-        $list = DB::table('impots')
-                ->select('*');
-        
-        $list_b = $list->get();
-        $response = json_decode($list_b); 
-        
-        $is_api_request = $request->route()->getPrefix() === 'api';
-        if($is_api_request){
-            $tojson = json_encode($response,JSON_FORCE_OBJECT|JSON_UNESCAPED_UNICODE);
-            print_r($tojson);
-
-        }else{
-
-           return view('IMPOTS/list',['response' => $response] );
-        }
-
-        
-    }*/
 
 
 

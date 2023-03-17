@@ -26,17 +26,16 @@ Route::post('assujettissement',[App\Http\Controllers\Assujettissement\MainContro
 Route::put('assujettissement/{id}',[App\Http\Controllers\Assujettissement\MainController::class,'Update']);
 
 
-
-
-
-
-
-
+Route::get('/', function () {
+    
+    //return view('landing');
+});
 
 
 Route::post('cloture/{id}',[App\Http\Controllers\Assujettissement\MainController::class,'Terminate']);
 
 Route::get('ping',function(){
+        echo "MS ASSUJETTISSEMENTS ";
         echo date("Y-m-d h:i:s");
     });
 
