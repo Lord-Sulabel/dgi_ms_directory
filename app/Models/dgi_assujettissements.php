@@ -16,6 +16,7 @@ class dgi_assujettissements extends Model
         'fk_repertoire',
         'dateDebut',
         'dateFin',
+
         'etat',
         'dateCreate',
         'agentCreate',
@@ -23,8 +24,9 @@ class dgi_assujettissements extends Model
         'agentUpdate',
         'dateDelete',
         'agentDelete',
+        
         'fk_impots',
-        'fk_nature_impots',
+        'fk_natureImpots',
     ];
 
     
