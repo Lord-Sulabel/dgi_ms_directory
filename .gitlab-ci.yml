@@ -1,0 +1,28 @@
+stages:
+  - build and tag image docker
+  - deploy-dev
+
+build:
+  stage: build and tag image docker
+  services:
+    - docker
+  before_script:
+    - docker login $CI_REGISTRY_URL -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD
+  script:
+    - docker build --tag $CI_API_ASSUJETTISSEMENT_REGISTRY_URL:latest .
+    - docker push $CI_API_ASSUJETTISSEMENT_REGISTRY_URL:latest
+    - docker rmi --force $CI_API_ASSUJETTISSEMENT_REGISTRY_URL:latest
+  tags:
+    - build_docker
+
+deploy:
+  image: bitnami/kubectl:latest
+  stage: deploy-dev
+  tags:
+      - kubernetes
+  only:
+    - master
+  script: 
+    - kubectl apply -f kubernetes/api-assujettissement.yaml
+    - kubectl get all -n ns-api-assujettissement-dev
+    - kubectl rollout restart deploy api-assujettissement-dev -n ns-api-assujettissement-dev
