@@ -14,6 +14,7 @@ class remote_server extends Model
         'nif',
         'date_exigibilite',
         
+        
     ];
 
 
