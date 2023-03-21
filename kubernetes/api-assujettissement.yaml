@@ -1,0 +1,125 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    kubernetes.io/metadata.name: ns-api-assujettissement-dev
+    env: dev
+    group: lot-1
+  name: ns-api-assujettissement-dev
+spec:
+  finalizers:
+  - kubernetes
+status:
+  phase: Active
+
+---
+apiVersion: v1
+items:
+- apiVersion: v1
+  data:
+    .dockerconfigjson: ewoJImF1dGhzIjogewoJCSJnaXRsYWIuaG9sb2dyYW0uY2Q6NTA1MCI6IHsKCQkJImF1dGgiOiAiY21GdGMyVnpPbE5XTVVSWVJXaHZZWGRpZGxoQllrNVhiblJTIgoJCX0KCX0KfQ==
+  kind: Secret
+  metadata:
+    labels:
+      env: dev
+      group: lot-1
+    name: regcred
+    namespace: ns-api-assujettissement-dev
+  type: kubernetes.io/dockerconfigjson
+kind: List
+metadata:
+  resourceVersion: ""
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    env: dev
+    group: lot-1
+  name: api-assujettissement-dev
+  namespace: ns-api-assujettissement-dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api-assujettissement-dev
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: api-assujettissement-dev
+        env: dev
+        group: lot-1
+    spec:
+      imagePullSecrets:
+      - name: regcred
+      containers:
+      - image: gitlab.hologram.cd:5050/dgi/microservices/dgi_ms_assujettissements:latest
+        name: api-assujettissement-dev
+        imagePullPolicy: Always
+        resources:
+          limits:
+            memory: 200Mi
+            cpu: 200m
+---
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  labels:
+    env: dev
+    group: lot-1
+  name: api-assujettissement-dev-hpa
+  namespace: ns-api-assujettissement-dev
+spec:
+  scaleTargetRef:
+    apiVersion: extensions/v1beta1
+    kind: Deployment
+    name: api-assujettissement-dev
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 80
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    env: dev
+    group: lot-1
+  name: api-assujettissement-dev-service
+  namespace: ns-api-assujettissement-dev
+spec:
+  ports:
+  - port: 9018
+    targetPort: 8000
+  selector:
+    app: api-assujettissement-dev
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  labels:
+    env: dev
+    group: lot-1
+  name: ingress-api-assujettissement-dev
+  namespace: ns-api-assujettissement-dev
+  annotations:
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: 'api-assujettissement-dev.apps.kubedev.hologram.cd'
+    http:
+      paths:
+      - pathType: Prefix
+        path: '/'
+        backend:
+          service:
+            name: api-assujettissement-dev-service
+            port:
+              number: 8000
+---
