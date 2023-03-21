@@ -32,6 +32,7 @@ class remote_server extends Model
             CURLOPT_HTTPHEADER => array(
                 // Set Here Your Requesred Headers
                 'Content-Type: application/json',
+                
             ),
         ));
         $response = curl_exec($curl);
