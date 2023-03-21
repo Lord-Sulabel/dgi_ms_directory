@@ -13,26 +13,34 @@ RUN apt-get update && \
         libzip-dev \
         zip \
         unzip \
+        wget \
+        gnupg2 \
         git && \
     docker-php-ext-configure intl && \
-    docker-php-ext-install intl pdo_mysql zip && \
+    docker-php-ext-install intl  zip && \
     pecl install redis && \
     docker-php-ext-enable redis && \
     curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && \
     composer install --no-dev
 
-# Définir les variables d'environnement pour Laravel
-# ENV APP_NAME=Laravel \
-#     APP_ENV=production \
-#     APP_DEBUG=false \
-#     APP_URL=http://localhost \
-#     LOG_CHANNEL=stderr \
-#     DB_CONNECTION=mysql \
-#     DB_HOST=mysql \
-#     DB_PORT=3306 \
-#     DB_DATABASE=laravel \
-#     DB_USERNAME=root \
-#     DB_PASSWORD=
+RUN wget -qO- https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
+RUN wget -qO-  https://packages.microsoft.com/config/ubuntu/22.04/prod.list > /etc/apt/sources.list.d/mssql-release.list
+
+RUN apt-get update
+
+RUN apt-get -y install unixodbc-dev
+
+RUN ACCEPT_EULA=Y apt-get -y install msodbcsql17
+
+RUN pecl install sqlsrv 
+
+RUN pecl install pdo_sqlsrv
+
+RUN echo "extension=sqlsrv.so" >> /usr/local/etc/php/conf.d/sqlsrv.ini && \
+    echo "extension=pdo_sqlsrv.so" >> /usr/local/etc/php/conf.d/pdo_sqlsrv.ini && \
+    docker-php-ext-enable sqlsrv pdo_sqlsrv
+
+RUN service apache2 restart
 
 # Exposer le port 80 pour Apache
 EXPOSE 8000
@@ -48,4 +56,4 @@ EXPOSE 8000
 # RUN chmod -R 777 /var/www/html/storage
 
 # Lancer Apache au démarrage du conteneur
-CMD php artisan serve  --port=8000
+CMD php artisan serve  --port=8000 --host=0.0.0.0
