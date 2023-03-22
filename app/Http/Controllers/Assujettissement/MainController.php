@@ -135,7 +135,11 @@ class MainController extends Controller
                 //unset($val->impots);
             }
         }
-        
+
+        $tmp            = new \stdClass();
+        $tmp->content   = $values;
+        $tmp->info      = NULL;
+        $values         = $tmp;
         $values = json_encode($values,JSON_UNESCAPED_UNICODE);
         return response($values, 200)->header('Content-Type', 'text/JSON');       
     }
