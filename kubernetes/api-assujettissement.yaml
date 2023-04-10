@@ -63,7 +63,7 @@ spec:
         imagePullPolicy: Always
         resources:
           limits:
-            memory: 200Misssssssssssssssssssssssssssssssssssssss
+            memory: 200Mi
 ---
 apiVersion: autoscaling/v1
 kind: HorizontalPodAutoscaler
