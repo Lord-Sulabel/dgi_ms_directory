@@ -191,8 +191,14 @@ class MainController extends Controller
     public function View($id){
         $obj    = new dgi_assujettissements;      
         $values = $obj->find($id);
-        $values = json_encode($values,JSON_UNESCAPED_UNICODE);
+        
     
+        $tmp            = new \stdClass();
+        $tmp->content   = $values;
+        $tmp->info      = NULL;
+        $values         = $tmp;
+        
+        $values = json_encode($values,JSON_UNESCAPED_UNICODE);
         return response($values, 200)->header('Content-Type', 'text/JSON');
     }
 
