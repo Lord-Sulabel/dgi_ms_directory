@@ -36,13 +36,13 @@ metadata:
   labels:
     env: dev
     group: lot-1
-  name: api-assujettissement-dev
+  name: api-assujettissement
   namespace: ns-api-assujettissement-dev
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: api-assujettissement-dev
+      app: api-assujettissement
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -51,7 +51,7 @@ spec:
   template:
     metadata:
       labels:
-        app: api-assujettissement-dev
+        app: api-assujettissement
         env: dev
         group: lot-1
     spec:
@@ -59,12 +59,11 @@ spec:
       - name: regcred
       containers:
       - image: gitlab.hologram.cd:5050/dgi/microservices/dgi_ms_assujettissements:latest
-        name: api-assujettissement-dev
+        name: api-assujettissement
         imagePullPolicy: Always
         resources:
           limits:
             memory: 200Mi
-            cpu: 200m
 ---
 apiVersion: autoscaling/v1
 kind: HorizontalPodAutoscaler
@@ -72,13 +71,13 @@ metadata:
   labels:
     env: dev
     group: lot-1
-  name: api-assujettissement-dev-hpa
+  name: api-assujettissement-hpa
   namespace: ns-api-assujettissement-dev
 spec:
   scaleTargetRef:
     apiVersion: extensions/v1beta1
     kind: Deployment
-    name: api-assujettissement-dev
+    name: api-assujettissement
   minReplicas: 1
   maxReplicas: 3
   targetCPUUtilizationPercentage: 80
@@ -90,14 +89,14 @@ metadata:
   labels:
     env: dev
     group: lot-1
-  name: api-assujettissement-dev-service
+  name: api-assujettissement-service
   namespace: ns-api-assujettissement-dev
 spec:
   ports:
   - port: 9018
     targetPort: 8000
   selector:
-    app: api-assujettissement-dev
+    app: api-assujettissement
 
 ---
 apiVersion: networking.k8s.io/v1
@@ -106,7 +105,7 @@ metadata:
   labels:
     env: dev
     group: lot-1
-  name: ingress-api-assujettissement-dev
+  name: ingress-api-assujettissement
   namespace: ns-api-assujettissement-dev
   annotations:
 spec:
@@ -119,7 +118,7 @@ spec:
         path: '/'
         backend:
           service:
-            name: api-assujettissement-dev-service
+            name: api-assujettissement-service
             port:
               number: 8000
 ---
