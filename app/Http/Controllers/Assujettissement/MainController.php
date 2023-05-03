@@ -64,11 +64,27 @@ class MainController extends Controller
 
 
     public function List(Request $request){
+        $parameters = [];
+        $query = "EXEC dbo.assujettissement_list ";
 
-        $fk_natureImpots = $request['fk_natureImpots'];
-        $impots = $request['fk_impots'];
+        if(isset($request['fk_repertoire'])){
+            $parameters[] = $request['fk_repertoire'];
+            $query .= "?,";
+        }
+
+        if(isset($request['fk_natureImpots'])){
+            $parameters[] = $request['fk_natureImpots'];
+            $query .= "?,";
+        }
+
+        $query .= "*,";
+        $query = str_replace(",*,","",$query);
+        $query = str_replace("*,","",$query);
+
+        $values = DB::select( $query, $parameters);
+
         
-
+/*
         $response = array();
         $post   = new dgi_assujettissements;
         $values = $post;
@@ -84,15 +100,40 @@ class MainController extends Controller
         $values = $values->get();
 
         $values = json_decode(json_encode($values));
-
-        $all_nifs = array();
-        $all_impots = array();
+*/
+        //$all_nifs   = array();
+        //$all_impots = array();
 
         //print_r($values);
 
-        if(is_array($values)){
+        $remote_server = new remote_server;
+        $token = $remote_server->RequestNewToken();
+
+        // $remote_server = new remote_server;
+        // $nif = 19;
+        // $endPoint = "https://api-contribuable-dev.apps.kubedev.hologram.cd/api/contribuable/recherche/nif,";
+        // $contribuable = $remote_server->GetData($endPoint.$nif,$token);
+        // print_r($contribuable);
+        
+
+        /*if(is_array($values)){
             foreach($values as $val){
                 $nif = $val->fk_repertoire;
+
+                //$all_nifs = base64_encode(json_encode($all_nifs));
+
+                $remote_server = new remote_server;
+                //$endPoint = "https://api-contribuable-dev.apps.kubedev.hologram.cd/api/contribuable/recherche/nif,";
+                //$contribuable = $remote_server->GetData($endPoint.$nif,$token);
+                //print_r($contribuable);
+
+                //$all_repertoires = json_decode($all_repertoires);
+
+                //$val->fk_repertoire;
+
+                //unset($all_nifs);
+    
+                /*
                 if(!in_array($nif,$all_nifs)){
                     $all_nifs[] = $nif;
                 }
@@ -101,45 +142,52 @@ class MainController extends Controller
                 if(!in_array($impot,$all_impots)){
                     $all_impots[] = $impot;
                 }
+                
             }
 
             
-            $all_nifs = base64_encode(json_encode($all_nifs));
-            $remote_server = new remote_server;
-            $all_repertoires = $remote_server->GetData("http://localhost/dgi_ms_gestion_contribuable/public/api/for_nifs_v2/".$all_nifs);
-            $all_repertoires = json_decode($all_repertoires);
-            unset($all_nifs);
-
-            
-            
-            $all_impots = base64_encode(json_encode($all_impots));
-            $remote_server = new remote_server;
-            $all_impots_details = $remote_server->GetData("http://localhost/dgi_ms_gestion_impots/public/api/actes_for_ids_v2/".$all_impots); 
-            $all_impots_details = json_decode($all_impots_details);
-            unset($all_impots);
-            unset($remote_server);
+            // $all_nifs = base64_encode(json_encode($all_nifs));
+            // $remote_server = new remote_server;
+            // $all_repertoires = $remote_server->GetData("http://localhost/dgi_ms_gestion_contribuable/public/api/for_nifs_v2/".$all_nifs);
+            // $all_repertoires = json_decode($all_repertoires);
+            // unset($all_nifs);
 
 
-            
+
+                        
+            // $all_impots = base64_encode(json_encode($all_impots));
+            // $remote_server = new remote_server;
+            // $all_impots_details = $remote_server->GetData("http://localhost/dgi_ms_gestion_impots/public/api/actes_for_ids_v2/".$all_impots); 
+            // $all_impots_details = json_decode($all_impots_details);
+            // unset($all_impots);
+            // unset($remote_server);
+
+
+            /*
             foreach($values as $val){
                 $nif = $val->fk_repertoire;
-                $impot = $val->fk_impots;
+                //$impot = $val->fk_impots;
 
                 if(is_array($all_repertoires)){
                     $val->fk_repertoire     = $all_repertoires->$nif;
                 }
-                if(is_array($all_impots_details)){
-                    $val->fk_impots         = $all_impots_details->$impot;
-                }
+
+                //if(is_array($all_impots_details)){
+                //    $val->fk_impots         = $all_impots_details->$impot;
+                //}
                 //unset($val->fk_repertoire);
                 //unset($val->impots);
             }
-        }
+            
+            
+        } */
+        
 
         $tmp            = new \stdClass();
         $tmp->content   = $values;
         $tmp->info      = NULL;
         $values         = $tmp;
+
         $values = json_encode($values,JSON_UNESCAPED_UNICODE);
         return response($values, 200)->header('Content-Type', 'text/JSON');       
     }
